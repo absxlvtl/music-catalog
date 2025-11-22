@@ -1,66 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const trackService = require('../service/trackService');
 
-function errorResponse(err, details = []) {
-  if (err && err.code) {
-    return { error: 'ValidationError', code: err.code, details: details.length ? details : [{ field: err.field || null, message: err.message }] };
-  }
-  return { error: 'ServerError', code: 'INTERNAL', details: [{ message: err && err.message ? err.message : String(err) }] };
-}
+// ---- MOCK DATA (тимчасово) ---- //
+let items = [
+  { id: 1, name: "Random Track", artist: "Unknown Artist" },
+  { id: 2, name: "Test Song", artist: "Tester" }
+];
 
-// POST /tracks
-router.post('/tracks', async (req, res) => {
-  try {
-    const payload = req.body;
-    const result = await trackService.create(payload);
-    res.status(201).json(result);
-  } catch (err) {
-    res.status(err.code ? 400 : 500).json(errorResponse(err));
-  }
+// GET /items
+router.get('/items', (req, res) => {
+  res.json(items);
 });
 
-// GET /tracks
-router.get('/tracks', async (req, res) => {
-  try {
-    const list = await trackService.list();
-    res.json(list);
-  } catch (err) {
-    res.status(500).json(errorResponse(err));
-  }
+// GET /items/:id
+router.get('/items/:id', (req, res) => {
+  const item = items.find(i => i.id === parseInt(req.params.id));
+  if (!item) return res.status(404).json({ error: "Item not found" });
+  res.json(item);
 });
 
-// GET /tracks/:id
-router.get('/tracks/:id', async (req, res) => {
-  try {
-    const t = await trackService.getById(req.params.id);
-    if (!t) return res.status(404).json({ error: 'NotFound', code: 'TRACK_NOT_FOUND', details: [] });
-    res.json(t);
-  } catch (err) {
-    res.status(500).json(errorResponse(err));
-  }
-});
+// POST /items
+router.post('/items', (req, res) => {
+  const newItem = {
+    id: Date.now(),
+    name: req.body.name,
+    artist: req.body.artist
+  };
 
-// PUT /tracks/:id
-router.put('/tracks/:id', async (req, res) => {
-  try {
-    const updated = await trackService.update(req.params.id, req.body);
-    if (!updated) return res.status(404).json({ error: 'NotFound', code: 'TRACK_NOT_FOUND', details: [] });
-    res.json(updated);
-  } catch (err) {
-    res.status(err.code ? 400 : 500).json(errorResponse(err));
-  }
-});
-
-// DELETE /tracks/:id
-router.delete('/tracks/:id', async (req, res) => {
-  try {
-    const ok = await trackService.remove(req.params.id);
-    if (!ok) return res.status(404).json({ error: 'NotFound', code: 'TRACK_NOT_FOUND', details: [] });
-    res.status(204).send();
-  } catch (err) {
-    res.status(500).json(errorResponse(err));
-  }
+  items.push(newItem);
+  res.status(201).json(newItem);
 });
 
 module.exports = router;
