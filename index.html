@@ -1,7 +1,7 @@
 <html>
 <body>
   <input id="title" placeholder="Title" />
-  <button id="btn">Create Order</button>
+<button id="create">Create Track</button>
   <pre id="out"></pre>
 
   <script type="module">
@@ -18,7 +18,7 @@
       const idemKey = await getOrReuseKey(payload);
 
       try {
-        const res = await fetchWithResilience("http://localhost:8081/orders", {
+        const res = await fetchWithResilience("http://localhost:8081/tracks", {
           method: "POST",
           body: JSON.stringify(payload),
           idempotencyKey: idemKey,

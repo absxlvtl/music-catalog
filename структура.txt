@@ -1,0 +1,33 @@
+WEB2/
+│ package.json
+│ README.md
+│
+├── docs/
+│   ├── api/
+│   │     ├── openapi.yaml
+│   │     └── swagger_screenshot.png
+│   ├── adr/
+│   │     ├── 0001-architecture-style.md
+│   │     ├── 0002-layered-architecture.md
+│   │     └── 0003-api-style-and-error-model.md
+│   └── domain/
+│         ├── entities.md
+│         └── glossary.md
+│
+├── services/
+│   ├── catalog-service/
+│   │     ├── server.js
+│   │     ├── package.json
+│   │     ├── api/
+│   │     │     └── routes.js (якщо потрібно)
+│   │     └── tests/
+│   │           ├── tracks.success.test.js
+│   │           └── tracks.fail.test.js
+│
+└── frontend/
+        ├── index.html
+        ├── tracks.html
+        ├── lib/
+        │      ├── http.js
+        │      └── idempotency.js
+        └── styles.css
