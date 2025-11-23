@@ -1,13 +1,11 @@
-const { recordRequest } = require("../metrics/metrics");
+const { incrementRequestCount } = require("../metrics/metrics");
 
 module.exports = function metricsMiddleware(req, res, next) {
-  const start = Date.now();
+  incrementRequestCount();  // лічильник запитів
 
   res.on("finish", () => {
-    const latency = Date.now() - start;
-    const success = res.statusCode < 400;
-    recordRequest(latency, success);
+    // Можеш додати response time або статуси
   });
 
-  next();
+  next(); // 
 };

@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../db");
+
+const db = require("../infra/db");
 const { writeEvent } = require("../outbox");
-const cache = require("../../shared/cache");
+const cache = require("../shared/cache");
+const { recordTrackCreated } = require("../metrics/metrics");
 
 // -----------------------------
 // GET /tracks (з кешем + ETag)
@@ -11,9 +13,8 @@ router.get("/tracks", (req, res) => {
   const cached = cache.get("tracks");
 
   if (cached) {
-    // Якщо клієнт прислав If-None-Match
     if (req.headers["if-none-match"] === cached.etag) {
-      return res.status(304).end(); // Not Modified
+      return res.status(304).end();
     }
 
     res.setHeader("ETag", cached.etag);
@@ -46,7 +47,7 @@ router.get("/tracks/:id", (req, res) => {
 });
 
 // -----------------------------
-// POST /tracks (створення)
+// POST /tracks
 // -----------------------------
 router.post("/tracks", (req, res) => {
   const { title, artist } = req.body;
@@ -61,16 +62,14 @@ router.post("/tracks", (req, res) => {
         artist
       };
 
-      // подія OUTBOX
       writeEvent({
         type: "track_created",
         track
       });
+
       recordTrackCreated();
-      // інвалідація кешу
+
       cache.invalidate("tracks");
-      const { recordTrackCreated } = require("../metrics/metrics");
-      
 
       res.status(201).json(track);
     }
@@ -78,7 +77,7 @@ router.post("/tracks", (req, res) => {
 });
 
 // -----------------------------
-// PUT /tracks/:id (оновлення)
+// PUT /tracks/:id
 // -----------------------------
 router.put("/tracks/:id", (req, res) => {
   const { title, artist } = req.body;

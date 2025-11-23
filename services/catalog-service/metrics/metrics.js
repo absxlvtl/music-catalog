@@ -1,33 +1,25 @@
-let metrics = {
-  totalRequests: 0,
-  totalErrors: 0,
-  totalLatency: 0,
-  totalTracksCreated: 0
+let counters = {
+  requests: 0,
+  tracks_created: 0
 };
 
-function recordRequest(latencyMs, success = true) {
-  metrics.totalRequests++;
-  metrics.totalLatency += latencyMs;
-  if (!success) metrics.totalErrors++;
+function incrementRequestCount() {
+  counters.requests++;
 }
 
 function recordTrackCreated() {
-  metrics.totalTracksCreated++;
+  counters.tracks_created++;
 }
 
 function getMetrics() {
-  const avgLatency = metrics.totalRequests
-    ? (metrics.totalLatency / metrics.totalRequests).toFixed(2)
-    : 0;
-
   return {
-    ...metrics,
-    avgLatencyMs: avgLatency
+    requests: counters.requests,
+    tracks_created: counters.tracks_created
   };
 }
 
 module.exports = {
-  recordRequest,
+  incrementRequestCount,
   recordTrackCreated,
   getMetrics
 };

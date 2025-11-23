@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const logger = require("./middlewares/logger");
-const metrics = require("./middlewares/metrics");
+const metricsMiddleware = require("./middlewares/metrics");
 const routes = require("./api/routes");
 const { getMetrics } = require("./metrics/metrics");
 
@@ -11,22 +11,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// middleware
 app.use(logger);
-app.use(metrics);
+app.use(metricsMiddleware);
 
-// health
+// /health
 app.get("/health", (_, res) => {
   res.json({ status: "ok" });
 });
 
-// metrics endpoint
+// /metrics
 app.get("/metrics", (_, res) => {
   res.json(getMetrics());
 });
 
-// main routes
+// маршрути
 app.use("/", routes);
 
 const PORT = 8081;
-app.listen(PORT, () => console.log(`Music catalog service running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Music catalog service running at http://localhost:${PORT}`);
+});
