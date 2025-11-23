@@ -1,34 +1,114 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const db = require("../db");
+const { writeEvent } = require("../outbox");
+const cache = require("../../shared/cache");
 
-// ---- MOCK DATA (тимчасово) ---- //
-let items = [
-  { id: 1, name: "Random Track", artist: "Unknown Artist" },
-  { id: 2, name: "Test Song", artist: "Tester" }
-];
+// -----------------------------
+// GET /tracks (з кешем + ETag)
+// -----------------------------
+router.get("/tracks", (req, res) => {
+  const cached = cache.get("tracks");
 
-// GET /items
-router.get('/items', (req, res) => {
-  res.json(items);
+  if (cached) {
+    // Якщо клієнт прислав If-None-Match
+    if (req.headers["if-none-match"] === cached.etag) {
+      return res.status(304).end(); // Not Modified
+    }
+
+    res.setHeader("ETag", cached.etag);
+    res.setHeader("Cache-Control", "public, max-age=10, stale-while-revalidate=20");
+    return res.json(cached.data);
+  }
+
+  db.all("SELECT * FROM tracks", [], (err, rows) => {
+    const etag = cache.makeETag(rows);
+
+    cache.set("tracks", {
+      etag,
+      data: rows
+    });
+
+    res.setHeader("ETag", etag);
+    res.setHeader("Cache-Control", "public, max-age=10, stale-while-revalidate=20");
+    res.json(rows);
+  });
 });
 
-// GET /items/:id
-router.get('/items/:id', (req, res) => {
-  const item = items.find(i => i.id === parseInt(req.params.id));
-  if (!item) return res.status(404).json({ error: "Item not found" });
-  res.json(item);
+// -----------------------------
+// GET /tracks/:id
+// -----------------------------
+router.get("/tracks/:id", (req, res) => {
+  db.get("SELECT * FROM tracks WHERE id = ?", [req.params.id], (err, row) => {
+    if (!row) return res.status(404).json({ error: "not_found" });
+    res.json(row);
+  });
 });
 
-// POST /items
-router.post('/items', (req, res) => {
-  const newItem = {
-    id: Date.now(),
-    name: req.body.name,
-    artist: req.body.artist
-  };
+// -----------------------------
+// POST /tracks (створення)
+// -----------------------------
+router.post("/tracks", (req, res) => {
+  const { title, artist } = req.body;
 
-  items.push(newItem);
-  res.status(201).json(newItem);
+  db.run(
+    "INSERT INTO tracks (title, artist) VALUES (?, ?)",
+    [title, artist],
+    function () {
+      const track = {
+        id: this.lastID,
+        title,
+        artist
+      };
+
+      // подія OUTBOX
+      writeEvent({
+        type: "track_created",
+        track
+      });
+      recordTrackCreated();
+      // інвалідація кешу
+      cache.invalidate("tracks");
+      const { recordTrackCreated } = require("../metrics/metrics");
+      
+
+      res.status(201).json(track);
+    }
+  );
+});
+
+// -----------------------------
+// PUT /tracks/:id (оновлення)
+// -----------------------------
+router.put("/tracks/:id", (req, res) => {
+  const { title, artist } = req.body;
+
+  db.run(
+    "UPDATE tracks SET title = ?, artist = ? WHERE id = ?",
+    [title, artist, req.params.id],
+    function () {
+      if (this.changes === 0)
+        return res.status(404).json({ error: "not_found" });
+
+      cache.invalidate("tracks");
+
+      res.json({ id: req.params.id, title, artist });
+    }
+  );
+});
+
+// -----------------------------
+// DELETE /tracks/:id
+// -----------------------------
+router.delete("/tracks/:id", (req, res) => {
+  db.run("DELETE FROM tracks WHERE id = ?", [req.params.id], function () {
+    if (this.changes === 0)
+      return res.status(404).json({ error: "not_found" });
+
+    cache.invalidate("tracks");
+
+    res.status(204).end();
+  });
 });
 
 module.exports = router;

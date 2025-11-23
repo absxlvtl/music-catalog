@@ -1,33 +1,59 @@
-WEB2/
+music-catalog/
 │ package.json
 │ README.md
+│ docker-compose.yml
 │
 ├── docs/
 │   ├── api/
 │   │     ├── openapi.yaml
 │   │     └── swagger_screenshot.png
+│   │
 │   ├── adr/
 │   │     ├── 0001-architecture-style.md
 │   │     ├── 0002-layered-architecture.md
-│   │     └── 0003-api-style-and-error-model.md
+│   │     ├── 0003-api-style-and-error-model.md
+│   │     ├── 0004-data-ownership.md        ← Лаба 6
+│   │     ├── 0005-cache-strategy.md        ← Лаба 7
+│   │     ├── 0006-observability.md         ← Лаба 8
+│   │     └── 0007-production-ready.md      ← Лаба 9
+│   │
 │   └── domain/
 │         ├── entities.md
-│         └── glossary.md
+│         ├── glossary.md
+│         └── context-map.png
 │
 ├── services/
 │   ├── catalog-service/
 │   │     ├── server.js
+│   │     ├── db.js
 │   │     ├── package.json
 │   │     ├── api/
-│   │     │     └── routes.js (якщо потрібно)
-│   │     └── tests/
-│   │           ├── tracks.success.test.js
-│   │           └── tracks.fail.test.js
+│   │     │     └── routes.js
+│   │     ├── domain/
+│   │     │     └── track.js
+│   │     ├── service/
+│   │     │     └── trackService.js
+│   │     ├── tests/
+│   │     │     ├── tracks.success.test.js
+│   │     │     └── tracks.fail.test.js
+│   │     ├── logs/
+│   │     │     └── *.log  
+│   │     └── Dockerfile  
+│   │
+│   ├── playlist-service/
+│   │     └── ... (аналогічна структура)
+│   │
+│   └── shared/               (файли типу logger, cache)
+│         ├── logger.js
+│         ├── cache.js
+│         └── error.js
 │
 └── frontend/
-        ├── index.html
-        ├── tracks.html
-        ├── lib/
-        │      ├── http.js
-        │      └── idempotency.js
-        └── styles.css
+      ├── index.html
+      ├── tracks.html
+      ├── playlists.html
+      ├── lib/
+      │     ├── http.js
+      │     ├── idempotency.js
+      │     └── degraded.js
+      └── styles.css
