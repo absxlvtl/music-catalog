@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+  namespace: catalog-ns
+data:
+  APP_MODE: "prod"
+  FEATURE_FLAG_NEW_UI: "false"
+  # тут можна додати інші конфіги

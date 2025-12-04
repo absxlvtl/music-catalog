@@ -57,3 +57,10 @@ music-catalog/
       │     ├── idempotency.js
       │     └── degraded.js
       └── styles.css
+
+cd services\catalog-service
+node server.js
+
+cd frontend-react
+npm run dev
+

@@ -68,7 +68,6 @@ router.post("/tracks", (req, res) => {
       });
 
       recordTrackCreated();
-
       cache.invalidate("tracks");
 
       res.status(201).json(track);
