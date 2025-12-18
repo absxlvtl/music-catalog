@@ -1,8 +1,7 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 
-// Якщо Kubernetes передає шлях через змінну DB_PATH — використовуємо її.
-// Якщо ні — працюємо як раніше (локально).
+
 const dbFile = process.env.DB_PATH
   ? process.env.DB_PATH
   : path.join(__dirname, "../../catalog.db");
@@ -34,5 +33,6 @@ db.serialize(() => {
     )
   `);
 });
+
 
 module.exports = db;

@@ -1,0 +1,35 @@
+name: CI Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies (Catalog)
+        run: npm install
+        working-directory: ./catalog
+
+      - name: Run tests (Catalog)
+        run: npm test
+        working-directory: ./catalog
+        
+  
+      - name: Build Docker Image (Gateway)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./gateway
+          push: false 
+          tags: ${{ github.repository }}/gateway:latest

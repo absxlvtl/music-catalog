@@ -1,22 +1,29 @@
-# Використовуємо Debian, бо sqlite3 не працює на Alpine
-FROM node:20
+FROM node:20-bullseye
+
+# Встановлюємо інструменти для збірки (потрібні для sqlite3)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential python3 git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Копіюємо package*.json
+# Копіюємо файли залежностей
 COPY package*.json ./
 
-# Встановлюємо залежності (НЕ production, бо потрібно зібрати sqlite3)
-RUN npm install
+# Встановлюємо залежності
+RUN npm ci --production
 
-# Копіюємо увесь проєкт
+# КЛЮЧОВИЙ МОМЕНТ: Примусова перезбірка sqlite3 під Linux
+RUN npm rebuild sqlite3
+
 COPY . .
 
-# Створюємо місце для бази даних
-RUN mkdir -p /data
+# Папка для бази даних та файлів (має збігатися з mountPath у k8s)
+RUN mkdir -p /data && chown node:node /data
+# Якщо ваш код шукає БД в /app/uploads, залиште як було, 
+# але в deployment.yaml у вас вказано /data
 
-ENV PORT=8081
-ENV DB_PATH=/data/catalog.db
+RUN mkdir -p /app/uploads
 
 EXPOSE 8081
 
