@@ -1,17 +1,13 @@
 import { API_URL } from "./config";
 
+// GET playlists
 export async function getPlaylists() {
   const res = await fetch(`${API_URL}/playlists`);
   if (!res.ok) throw new Error("Failed to load playlists");
   return res.json();
 }
 
-export async function getPlaylist(id) {
-  const res = await fetch(`${API_URL}/playlists/${id}`);
-  if (!res.ok) throw new Error("Failed to load playlist");
-  return res.json();
-}
-
+// CREATE playlist
 export async function createPlaylist(name) {
   const res = await fetch(`${API_URL}/playlists`, {
     method: "POST",
@@ -23,9 +19,7 @@ export async function createPlaylist(name) {
   return res.json();
 }
 
+// DELETE playlist
 export async function deletePlaylist(id) {
-  const res = await fetch(`${API_URL}/playlists/${id}`, { method: "DELETE" });
-
-  if (!res.ok) throw new Error("Failed to delete playlist");
-  return true;
+  await fetch(`${API_URL}/playlists/${id}`, { method: "DELETE" });
 }

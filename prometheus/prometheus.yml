@@ -1,0 +1,19 @@
+
+global:
+  scrape_interval: 15s # Як часто сканувати
+  external_labels:
+    monitor: 'music-catalog-monitor'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090'] # Самомоніторинг Prometheus
+
+  - job_name: 'catalog-service' # Назва вашого сервісу
+    metrics_path: /metrics # Маршрут, який генерує метрики (ви його вже маєте)
+    static_configs:
+      - targets: ['catalog-service:3000'] # Ім'я сервісу та його внутрішній порт
+
+  - job_name: 'gateway-service'
+    static_configs:
+      - targets: ['gateway-service:8080']

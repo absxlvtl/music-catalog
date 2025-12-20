@@ -1,0 +1,14 @@
+// gateway-service/package.json
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "description": "API Gateway for Music Catalog",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-http-proxy": "^1.6.3" 
+  }
+}

@@ -1,3 +1,4 @@
+// src/api/tracksApi.js
 import { API_URL } from "./config";
 
 // GET all tracks
@@ -14,33 +15,23 @@ export async function getTrack(id) {
   return res.json();
 }
 
-// CREATE track
-export async function createTrack(data) {
+// CREATE track WITH FILE
+export async function createTrack({ title, artist, file }) {
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("artist", artist);
+  if (file) formData.append("file", file);
+
   const res = await fetch(`${API_URL}/tracks`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
+    body: formData
   });
 
   if (!res.ok) throw new Error("Failed to create track");
   return res.json();
 }
 
-// UPDATE track
-export async function updateTrack(id, data) {
-  const res = await fetch(`${API_URL}/tracks/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-
-  if (!res.ok) throw new Error("Failed to update track");
-  return res.json();
-}
-
-// DELETE track
+// DELETE
 export async function deleteTrack(id) {
-  const res = await fetch(`${API_URL}/tracks/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete track");
-  return true;
+  await fetch(`${API_URL}/tracks/${id}`, { method: "DELETE" });
 }

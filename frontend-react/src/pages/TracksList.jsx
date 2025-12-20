@@ -1,19 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getTracks, deleteTrack } from "../api/tracksApi";
 import { Link } from "react-router-dom";
 import { colors } from "../theme/colors";
 
-import { FaTrash, FaInfoCircle } from "react-icons/fa";
+import { FaTrash, FaInfoCircle, FaPlay, FaPause } from "react-icons/fa";
 
 export default function TracksList() {
   const [tracks, setTracks] = useState([]);
+  const [playingId, setPlayingId] = useState(null);
+  const audio = useRef(new Audio());
 
   useEffect(() => {
     loadTracks();
+
+    audio.current.onended = () => setPlayingId(null);
   }, []);
 
   function loadTracks() {
     getTracks().then(data => setTracks(data));
+  }
+
+  function togglePlay(track) {
+    const url = `http://localhost:3000/uploads/${track.filePath}`;
+
+    if (playingId === track.id) {
+      audio.current.pause();
+      setPlayingId(null);
+      return;
+    }
+
+    audio.current.src = url;
+    audio.current.play();
+    setPlayingId(track.id);
   }
 
   return (
@@ -51,9 +69,31 @@ export default function TracksList() {
             <div>
               <h3>{t.title}</h3>
               <p style={{ color: colors.textMuted }}>{t.artist}</p>
+
+              {t.filePath ? (
+                <small style={{ color: colors.textMuted }}>
+                  🎵 File: {t.filePath}
+                </small>
+              ) : (
+                <small style={{ color: "red" }}>— No file —</small>
+              )}
             </div>
 
-            <div style={{ display: "flex", gap: "14px" }}>
+            <div style={{ display: "flex", gap: "14px", alignItems:"center" }}>
+
+              {t.filePath && (
+                <button
+                  onClick={() => togglePlay(t)}
+                  style={{
+                    background: "transparent",
+                    color: "limegreen",
+                    cursor: "pointer"
+                  }}
+                >
+                  {playingId === t.id ? <FaPause size={22} /> : <FaPlay size={22} />}
+                </button>
+              )}
+
               <Link to={`/track/${t.id}`} style={{ color: colors.accent }}>
                 <FaInfoCircle size={20} />
               </Link>
@@ -72,6 +112,7 @@ export default function TracksList() {
               >
                 <FaTrash size={20} />
               </button>
+
             </div>
           </div>
         ))}
