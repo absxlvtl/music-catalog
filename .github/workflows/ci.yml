@@ -23,10 +23,11 @@ jobs:
         run: npm install
         working-directory: ./services/catalog-service
 
-      # Якщо у тебе немає тестів, цей крок можна пропустити (закоментувати)
-      - name: Run tests
-        run: npm test --if-present
+      #- name: Run tests
         working-directory: ./services/catalog-service
+        run: |
+          chmod +x ./node_modules/.bin/jest
+          npm test --if-present
         
       - name: Build Docker Image (Check)
         uses: docker/build-push-action@v5

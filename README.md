@@ -2,69 +2,6 @@
 
 **Коротко:** простий бекенд (Node.js + Express + SQLite) і фронтенд (React) для керування каталогом музичних треків та плейлистів. Проєкт створено як курсової роботи з предмету *Веб програмування*.
 
-## Структура проекту
-│ README.md
-│ docker-compose.yml
-│
-├── docs/
-│   ├── api/
-│   │     ├── openapi.yaml
-│   │     └── swagger_screenshot.png
-│   │
-│   ├── adr/
-│   │     ├── 0001-architecture-style.md
-│   │     ├── 0002-layered-architecture.md
-│   │     ├── 0003-api-style-and-error-model.md
-│   │     ├── 0004-data-ownership.md 
-│   │     ├── 0005-cache-strategy.md  
-│   │     ├── 0006-observability.md 
-│   │     └── 0007-production-ready.md 
-│   │
-│   └── domain/
-│         ├── entities.md
-│         ├── glossary.md
-│         └── context-map.png
-│
-├── services/
-│   ├── catalog-service/
-│   │     ├── server.js
-│   │     ├── db.js
-│   │     ├── package.json
-│   │     ├── api/
-│   │     │     └── routes.js
-│   │     ├── domain/
-│   │     │     └── track.js
-│   │     ├── service/
-│   │     │     └── trackService.js
-│   │     ├── tests/
-│   │     │     ├── tracks.success.test.js
-│   │     │     └── tracks.fail.test.js
-│   │     ├── logs/
-│   │     ├── k8s/
-│   │     │     ├── namespace.yaml
-│   │     │     ├── configmap.yaml
-│   │     │     ├── secret.yaml
-│   │     │     ├── deployment.yaml
-│   │     │     ├── service.yaml
-│   │     └── Dockerfile  
-│   │
-│   ├── playlist-service/
-│   │
-│   └── shared/               (файли типу logger, cache)
-│         ├── logger.js
-│         ├── cache.js
-│         └── error.js
-│
-└── frontend/
-      ├── index.html
-      ├── tracks.html
-      ├── playlists.html
-      ├── lib/
-      │     ├── http.js
-      │     ├── idempotency.js
-      │     └── degraded.js
-      └── styles.css
-
 
 
 ## запуск бекенду
