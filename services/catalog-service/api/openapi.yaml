@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: Catalog Service API (Music)
+  version: "1.0.0"
+  description: API для управління треками (catalog-service). CRUD для Track.
+
+servers:
+  - url: http://localhost:3000
+    description: Local dev server
+
+components:
+  schemas:
+    TrackCreateRequest:
+      type: object
+      required:
+        - title
+        - artistId
+      properties:
+        title:
+          type: string
+          example: "Shape of You"
+        artistId:
+          type: string
+          example: "a-123"
+        albumId:
+          type: string
+          example: "al-1"
+        genre:
+          type: string
+          example: "Pop"
+
+    TrackUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        artistId:
+          type: string
+        albumId:
+          type: string
+        genre:
+          type: string
+
+    TrackResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "t-1"
+        title:
+          type: string
+          example: "Shape of You"
+        artistId:
+          type: string
+          example: "a-123"
+        albumId:
+          type: string
+        genre:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "ValidationError"
+        code:
+          type: string
+          example: "TITLE_REQUIRED"
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "title"
+              message:
+                type: string
+                example: "Title is required"
+
+paths:
+  /tracks:
+    post:
+      summary: Create track
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: List tracks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrackResponse'
+
+  /tracks/{id}:
+    get:
+      summary: Get track by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update track (replace)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

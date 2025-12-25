@@ -130,6 +130,31 @@ app.use("/uploads", express.static("uploads"));
 
 // --- health ---
 app.get("/health-check", (_, res) => res.json({ status: "OK" }));
+// Спеціальний маршрут для тестування помилки (додай його!)
+app.get('/test-error', (req, res, next) => {
+  const err = new Error("Database connection timeout");
+  err.status = 503; // Service Unavailable
+  next(err);
+});
+
+// ФІНАЛЬНИЙ ОБРОБНИК ПОМИЛОК (те, що ми обговорювали)
+app.use((err, req, res, next) => {
+  // Беремо ID з заголовків або створюємо випадковий
+  const requestId = req.headers['x-request-id'] || 'req-' + Math.random().toString(36).substr(2, 9);
+  
+  const status = err.status || 500;
+  
+  res.status(status).json({
+    status: 'error',
+    code: status,
+    message: err.message || 'Internal Server Error',
+    requestId: requestId, // Твій великий акцент для 5 лаби
+    timestamp: new Date().toISOString()
+  });
+});
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Сервер запущено на http://localhost:${PORT}`);
+    console.log(`🚨 Тестова помилка доступна за адресою: http://localhost:${PORT}/test-error`);
+});

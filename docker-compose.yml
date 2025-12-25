@@ -47,7 +47,6 @@ services:
     depends_on:
       - catalog-service
 
-  # --- 5. GRAFANA (Дашборди, Lab 8) ---
   grafana:
     image: grafana/grafana:latest
     container_name: grafana

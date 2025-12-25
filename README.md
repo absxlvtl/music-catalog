@@ -1,6 +1,6 @@
 # Music Catalog — Course Project (Web Programming)
 
-**Коротко:** простий бекенд (Node.js + Express + SQLite) і фронтенд (React) для керування каталогом музичних треків та плейлистів. Проєкт створено як курсової роботи з предмету *Веб програмування*.
+**Коротко:** простий бекенд (Node.js + Express + SQLite) і фронтенд (React) для керування каталогом музичних треків та плейлистів. Проєкт створено як курсової роботи з предмету *Веб програмування*.cd 
 
 
 
@@ -32,7 +32,7 @@ kubectl -n catalog-ns get pods
 ## Документація
 
 ## Архітектура системи
-![System Architecture](./diagrams/architecture.png)
+![System Architecture](./docs/architecture.png)
 
 API contract: docs/api/openapi.yaml
 
