@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: catalog
-          image: catalog-service:local   # тимчасове ім'я (див. нижче про minikube)
-          imagePullPolicy: Never
+          image: catalog-service:local 
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
           envFrom:
@@ -29,4 +29,4 @@ spec:
               mountPath: /data
       volumes:
         - name: data
-          emptyDir: {}   # для dev; в production заміни на PVC
+          emptyDir: {}  
